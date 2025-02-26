@@ -45,7 +45,7 @@ router.get("/users", async function (req, res) {
 router.get("/pokemon", async function (req, res) {
   const connect = await dbConnect("pokemon");
 
-  const find = await connection.collection.find({}).toArray();
+  const find = await connect.collection.find({}).toArray();
 
   if (find.length) {
     return res.send("already populated");
@@ -98,8 +98,13 @@ router.get("/pokemon", async function (req, res) {
 
 router.get("/starwars", async function (req, res) {
   // let characters = [];
+  const connect = await dbConnect("pokemon");
 
-  const connect = await dbConnect("starWarsCharacters");
+  const find = await connect.collection.find({}).toArray();
+
+  if (find.length) {
+    return res.send("already populated");
+  }
 
   let results = [];
 
