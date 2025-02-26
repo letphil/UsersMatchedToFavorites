@@ -43,6 +43,14 @@ router.get("/users", async function (req, res) {
 });
 
 router.get("/pokemon", async function (req, res) {
+  const connect = await dbConnect("pokemon");
+
+  const find = await connection.collection.find({}).toArray();
+
+  if (find.length) {
+    return res.send("already populated");
+  }
+
   async function isNonEvolved(pokemonUrl) {
     const data = (await axios.get(pokemonUrl)).data;
     const speciesData = (await axios.get(data["species"]["url"])).data;
@@ -83,13 +91,52 @@ router.get("/pokemon", async function (req, res) {
     }
   }
 
-  const pokemonCollection = await dbConnect("pokemon");
-
-  const insertPokemon = await pokemonCollection.collection.insertMany(
-    notEvolvedPokemon
-  );
+  const insertPokemon = await connect.collection.insertMany(notEvolvedPokemon);
 
   res.send(insertPokemon);
+});
+
+router.get("/starwars", async function (req, res) {
+  // let characters = [];
+
+  const connect = await dbConnect("starWarsCharacters");
+
+  let results = [];
+
+  for (let i = 1; i < 10; i++) {
+    const request = await axios.get(APIS.swapi, {
+      params: { page: i },
+    });
+    results.push(request);
+  }
+
+  const resolve = (await Promise.resolve(results)).map((r) => r.data.results);
+
+  const processed = resolve.flat().map((character) => ({
+    name: character.name,
+    gender: character.gender,
+  }));
+
+  const insertStarWarsCharacters = await connect.collection.insertMany(
+    processed
+  );
+
+  res.send(insertStarWarsCharacters);
+
+  // res.send(characters);
+
+  // let currentResult = true;
+
+  // let page = 10;
+
+  // res.send(request);
+
+  // while (currentResult) {
+  //   const request = await axios.get(APIS.swapi, {
+  //     params: { page },
+  //   });
+
+  // }
 });
 
 module.exports = router;
