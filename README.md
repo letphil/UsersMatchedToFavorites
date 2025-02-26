@@ -17,6 +17,6 @@ https://swapi.dev/api/people
 
 ```
 
-## backend[backend/README.md]
+## backend[./backend/README.md]
 
-## frontend[frontend/README.md]
+## frontend[./frontend/README.md]
